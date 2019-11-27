@@ -1,9 +1,9 @@
 function Vue (options) {
     // 设置视图管理区
-    this.$el = typeof options.el=== 'string' ? document.querySelector(options.el) : options.el
+    this.$el = typeof options.el === 'string' ? document.querySelector(options.el) : options.el
     // 代理data中的数据到当前构造函数的原型上
     this.$data = options.data
-
+    this.$methods = options.methods
 
 
     // 遍历data中的所有属性
@@ -12,9 +12,9 @@ function Vue (options) {
         // 定义setter/getter
         Object.defineProperty(this, key, {
             // 是否可配置
-            configurable:false,
+            configurable: false,
             // 是否可枚举
-            enumerable:true,
+            enumerable: true,
             // setter   必须要有一个形参
             set (value) {
                 // console.log('属性' + key + '被设置了')

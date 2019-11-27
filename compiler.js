@@ -24,7 +24,7 @@ Compiler.prototype.compileTemplate = function (dom, vm) {
 
         //  插值表达式
         if (reg.test(node.textContent)) {
-            console.log(node.nodeType);
+            // console.log(node.nodeType);
 
             // console.log(RegExp.$1);
             // 正则表达式中的第一个单元，也就是第一个小括号包裹的内容
@@ -41,14 +41,46 @@ Compiler.prototype.compileTemplate = function (dom, vm) {
                 if (item.name.indexOf('v-') === 0) {
                     // 获取v-后面的名字
                     var attrName = item.name.slice(2)
-                    if (attrName === 'text') {
-                        node.innerText = vm[item.value]
-                    } else if (attrName === 'html') {
-                        node.innerHTML = vm[item.value]
-                    }
+                    // if (attrName === 'text') {
+                    //     // v-text
+                    //     node.innerText = vm[item.value]
+                    // } else if (attrName === 'html') {
+                    //     // v-html
+                    //     node.innerHTML = vm[item.value]
+                    // }
 
+                    // console.log(attrName);
+                    if (attrName.indexOf('on') === 0) {
+                        // 事件指令集
+                        var event = attrName.split(':')[1]
+                        // console.log(event);
+
+                        // console.log(vm.$methods);
+                        // console.log(item.value);
+                        
+                        // 绑定事件 : 注意，这里的this指向了事件源，因此需要改回为vm实例
+                        node.addEventListener(event, vm.$methods[item.value].bind(vm))
+
+                    } else {
+                        // 简单指令集
+                        // 利用短路语句来执行指令集中的指令
+                        directives[attrName] && directives[attrName](node, vm[item.value])
+                    }
                 }
             })
         }
+
+        // 递归查找嵌套在元素节点内的节点
+        this.compileTemplate(node, vm)
     })
+}
+
+// 定义指令集
+var directives = {
+    text (node, value) {
+        node.innerText = value
+    },
+    html (node, value) {
+        node.innerHTML = value
+    }
 }
