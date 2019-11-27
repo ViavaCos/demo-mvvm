@@ -17,12 +17,12 @@ function Vue (options) {
             enumerable:true,
             // setter   必须要有一个形参
             set (value) {
-                console.log('属性' + key + '被设置了')
+                // console.log('属性' + key + '被设置了')
                 options.data[key] = value
             },
             // getter  访问属性时触发的回调
             get () {
-                console.log('属性' + key + '被访问了')
+                // console.log('属性' + key + '被访问了')
                 return options.data[key]
             }
 
