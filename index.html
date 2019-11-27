@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>模拟实现简易MVVM</title>
+</head>
+<body>
+
+<div id="app">
+<p>{{msg}}</p>
+<p v-text="msg"></p>
+<p v-html="htmlStr"></p>
+<input type="text" v-model="msg">
+<button v-on:click="tips">按钮</button>
+</div>
+
+
+<script src="./compiler.js"></script>
+<script src="./vue.js"></script>
+
+    <script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            msg:'Hello ViavaCos',
+            htmlStr:`
+            <ul>
+                <li>Beijing</li>
+                <li>ShangHai</li>
+                <li>GuangZhou</li>
+            </ul>  
+            `
+        },
+        methods:{
+            tips(){
+                console.log('这是一个提示!')
+            }
+        }
+    })
+    
+    </script>
+</body>
+</html>
