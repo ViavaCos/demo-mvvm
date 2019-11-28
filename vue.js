@@ -31,6 +31,9 @@ function Vue (options) {
 
     // 编译模板
     new Compiler(this.$el, this)
+
+    // 数据劫持
+    new Observe(this.$data)
 }
 
 

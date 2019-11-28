@@ -1,3 +1,5 @@
+var bus = new Bus()
+
 function Compiler (dom, vm) {
     // console.log(dom.nodeType);
     if (dom.nodeType !== 1) return;
@@ -30,6 +32,11 @@ Compiler.prototype.compileTemplate = function (dom, vm) {
             // 正则表达式中的第一个单元，也就是第一个小括号包裹的内容
             // 将符合规则的变量转换为vm实例中定义的数据
             node.textContent = vm[RegExp.$1]
+
+            // 自定义事件监听数据
+            bus.on('update', function () {
+                node.textContent = this.vm[RegExp.$1];
+            })
         } else if (node.nodeType === 1) {
             // console.log(node.attributes);
             // node.attributes 获取当前元素节点的属性
@@ -57,14 +64,19 @@ Compiler.prototype.compileTemplate = function (dom, vm) {
 
                         // console.log(vm.$methods);
                         // console.log(item.value);
-                        
+
                         // 绑定事件 : 注意，这里的this指向了事件源，因此需要改回为vm实例
                         node.addEventListener(event, vm.$methods[item.value].bind(vm))
 
                     } else {
                         // 简单指令集
                         // 利用短路语句来执行指令集中的指令
-                        directives[attrName] && directives[attrName](node, vm[item.value])
+                        directives[attrName] && directives[attrName](node, vm[item.value], vm)
+                        
+                        // 绑定事件，确保在数据更新时能同时更新dom
+                        bus.on('update', function () {
+                            directives[attrName] && directives[attrName](node, vm[item.value], vm)
+                        })
                     }
                 }
             })
@@ -82,5 +94,13 @@ var directives = {
     },
     html (node, value) {
         node.innerHTML = value
+    },
+    model (node, value, vm) {
+        node.value = value
+        node.addEventListener('input', () => {
+            vm.msg = node.value
+        })
     }
 }
+
+// Object.defineProperty(data)
