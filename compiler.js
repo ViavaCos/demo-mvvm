@@ -71,11 +71,11 @@ Compiler.prototype.compileTemplate = function (dom, vm) {
                     } else {
                         // 简单指令集
                         // 利用短路语句来执行指令集中的指令
-                        directives[attrName] && directives[attrName](node, vm[item.value], vm)
-                        
+                        directives[attrName] && directives[attrName](node, vm, item.value)
+
                         // 绑定事件，确保在数据更新时能同时更新dom
                         bus.on('update', function () {
-                            directives[attrName] && directives[attrName](node, vm[item.value], vm)
+                            directives[attrName] && directives[attrName](node, vm, item.value)
                         })
                     }
                 }
@@ -89,17 +89,26 @@ Compiler.prototype.compileTemplate = function (dom, vm) {
 
 // 定义指令集
 var directives = {
-    text (node, value) {
-        node.innerText = value
+    text (node, vm, value) {
+        node.innerText = vm[value]
     },
-    html (node, value) {
-        node.innerHTML = value
+    html (node, vm, value) {
+        node.innerHTML = vm[value]
     },
-    model (node, value, vm) {
-        node.value = value
+    model (node, vm, value) {
+        node.value = vm[value]
         node.addEventListener('input', () => {
-            vm.msg = node.value
+            vm[value] = node.value
         })
+    },
+    show (node, vm, value) {
+        // console.log('**********', value, typeof value);
+        // console.log(eval(value));
+
+        // 不建议使用eval，待改进...
+        if (!eval(value)) {
+            node.style.display = 'none';
+        }
     }
 }
 
